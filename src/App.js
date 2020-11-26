@@ -41,23 +41,30 @@ const App = ({ user, signOut }) => {
             });
     };
 
-    const updateReadMe = (token) => {
-        console.log(token);
-        console.log(accessToken);
-        axios.put(
-            "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md",
-            {
-                message: "message",
-                content: btoa(data),
-                sha: "e86b0ed646f8f15011e268aa0276ee58e2ba954f",
-            },
-            {
-                headers: {
-                    Authorization: `token ${token}`,
-                    Accept: "application/vnd.github.v3+json",
+    const updateReadMe = async (token) => {
+        try {
+            let response = await await axios.get(
+                "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md"
+            );
+            let sha = response.data.sha;
+            console.log(response);
+            axios.put(
+                "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md",
+                {
+                    message: "message",
+                    content: btoa(data),
+                    sha: sha,
                 },
-            }
-        );
+                {
+                    headers: {
+                        Authorization: `token ${token}`,
+                        Accept: "application/vnd.github.v3+json",
+                    },
+                }
+            );
+        } catch (err) {
+            alert(err);
+        }
     };
 
     useEffect(() => {
