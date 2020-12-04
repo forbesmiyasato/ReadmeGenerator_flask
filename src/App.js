@@ -6,10 +6,13 @@ import firebaseConfig from "./firebaseConfig";
 import axios from "axios";
 import TextForm from "./components/textForm";
 import Form from "react-bootstrap/Form";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import { Download, CloudUpload, Eye } from 'react-bootstrap-icons';
 
 const App = () => {
     if (!firebase.apps.length) {
-        firebase.initializeApp({});
+        firebase.initializeApp(firebaseConfig);
     }
 
     var provider = new firebase.auth.GithubAuthProvider();
@@ -85,68 +88,87 @@ const App = () => {
     };
 
     useEffect(() => {
-        // const getAccessToken = async (refreshToken) => {
-        //     let response = await axios.post(
-        //         "https://github.com/login/oauth/access_token",
-        //         {
-        //             refreshToken: refreshToken,
-        //             grant_type: "refresh_token",
-        //             client_id: firebaseConfig.clientID,
-        //             client_secret: firebaseConfig.clientSecret,
-        //         }
-        //     );
-        //     return response;
-        // };
-        // if (user) {
-        //     console.log(getAccessToken(user.refreshToken));
-        // }
         console.log(data);
     }, [data]);
 
     return (
         <div className="App">
-            <header className="App-header">
+            <Container>
+                <h1 className="App-header mt-3">
+                    GitHub README Generator by Forbes Miyasato
+                </h1>
+
                 <Form>
-                    <TextForm label="Title" type="textarea"></TextForm>
+                    <TextForm
+                        id="form-title"
+                        label="Title"
+                        type="text"
+                    ></TextForm>
+                    <TextForm
+                        id="form-description"
+                        label="Description"
+                        as="textarea"
+                        placeholder="Brief Description..."
+                    ></TextForm>
+                    <TextForm
+                        id="form-intro"
+                        label="Introduction"
+                        as="textarea"
+                        placeholder="Why did you create this project..."
+                    ></TextForm>
+                    <TextForm
+                        id="form-installation "
+                        label="Get Started"
+                        placeholder="Installation instructions..."
+                        as="textarea"
+                    ></TextForm>
+                    <TextForm
+                        id="form-usage"
+                        label="Usage"
+                        placeholder="Explain how to use this project..."
+                        as="textarea"
+                    ></TextForm>
+                    <TextForm
+                        id="form-contribute"
+                        label="Contribute"
+                        placeholder="Explain how people can contribute to this project..."
+                        as="textarea"
+                    ></TextForm>
+                    <TextForm
+                        id="form-acknowledgement"
+                        label="Acknowledgements"
+                        placeholder="Anybody you wish to thank for helping or collaborating with you on this project..."
+                        as="textarea"
+                    ></TextForm>
                 </Form>
-                {user ? (
-                    <p>Hello, {user.displayName}</p>
-                ) : (
-                    <p>Please sign in.</p>
-                )}
+                <Button variant="outline-primary mr-2"><Download /> Get Markdown</Button>
+                <Button variant="outline-success mr-2"><CloudUpload /> Upload To Github</Button>
+                <Button variant="outline-info"><Eye /> Preview</Button>
+            </Container>
+            {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
 
-                {user ? (
-                    <>
-                        <img
-                            src={user.photoURL}
-                            style={{
-                                width: "200px",
-                                height: "200px",
-                                borderRadius: "50%",
-                            }}
-                        />
-                        <br />
+            {user ? (
+                <>
+                    <img
+                        src={user.photoURL}
+                        style={{
+                            width: "200px",
+                            height: "200px",
+                            borderRadius: "50%",
+                        }}
+                    />
+                    <br />
 
-                        <button onClick={signOut}>Sign out</button>
-                        <button onClick={updateReadMe.bind(this, accessToken)}>
-                            Update ReadMe
-                        </button>
-                    </>
-                ) : (
-                    <button onClick={signInWithGithub}>
-                        Sign in with Github
+                    <button onClick={signOut}>Sign out</button>
+                    <button onClick={updateReadMe.bind(this, accessToken)}>
+                        Update ReadMe
                     </button>
-                )}
-            </header>
+                </>
+            ) : (
+                <button onClick={signInWithGithub}>Sign in with Github</button>
+            )}
         </div>
     );
 };
-
-// const firebaseAppAuth = firebaseApp.auth();
-
-// const providers = {
-//     githubProvider: new firebase.auth.GithubAuthProvider(),
-//     scope: "repo",
-// };
 
 export default App;
