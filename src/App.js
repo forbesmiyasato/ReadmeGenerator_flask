@@ -8,19 +8,28 @@ import TextForm from "./components/textForm";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import { Download, CloudUpload, Eye } from 'react-bootstrap-icons';
+import { Download, CloudUpload, Eye } from "react-bootstrap-icons";
 
 const App = () => {
+    const [user, setUser] = useState(null);
+    const [accessToken, setAccessToken] = useState("");
+    const [markdown, setMarkdown] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [intro, setIntro] = useState("");
+    const [installation, setInstallation] = useState("");
+    const [usage, setUsage] = useState("");
+    const [contribute, setContribute] = useState("");
+    const [acknowledgements, setAcknowledgements] = useState("");
+
+    //initialize firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
 
+    //set up the provider for firebase authentication
     var provider = new firebase.auth.GithubAuthProvider();
     provider.addScope("repo");
-
-    const [user, setUser] = useState(null);
-    const [accessToken, setAccessToken] = useState("");
-    const [data, setData] = useState("");
 
     const signOut = () => {
         firebase
@@ -61,6 +70,42 @@ const App = () => {
             });
     };
 
+    //Prevent the form from being submitted when user presses enter
+    const handleKeyDown = (event) => {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        }
+    };
+
+    //Methods to handle user data input
+    const handleTitleChange = (element) => {
+        setTitle(element.target.value);
+    };
+
+    const handleDescriptionChange = (element) => {
+        setDescription(element.target.value);
+    };
+
+    const handleIntroChange = (element) => {
+        setIntro(element.target.value);
+    };
+
+    const handleInstallationChange = (element) => {
+        setInstallation(element.target.value);
+    };
+
+    const handleUsageChange = (element) => {
+        setUsage(element.target.value);
+    };
+
+    const handleContributeChange = (element) => {
+        setContribute(element.target.value);
+    };
+
+    const handleAcknowledgementsChange = (element) => {
+        setAcknowledgements(element.target.value);
+    };
+
     const updateReadMe = async (token) => {
         try {
             let response = await await axios.get(
@@ -72,7 +117,7 @@ const App = () => {
                 "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md",
                 {
                     message: "message",
-                    content: btoa(data),
+                    content: btoa(markdown),
                     sha: sha,
                 },
                 {
@@ -87,9 +132,35 @@ const App = () => {
         }
     };
 
+    console.log(markdown)
     useEffect(() => {
-        console.log(data);
-    }, [data]);
+        let markdown = `
+        # ${title.trim()} \n
+        ${description.trim()}\n
+        <br />\n
+        ### Welcome to ${title.trim()}\n
+        <hr>\n
+        ${intro.trim()}\n
+        <br />\n
+        ### Get Started\n
+        <hr>\n
+        ${installation.trim()}\n
+        <br />\n
+        ### Usage\n
+        <hr>\n
+        ${usage.trim()}\n
+        <br />\n
+        ### Contribute\n
+        <hr>\n
+        ${contribute.trim()}\n
+        <br />\n
+        ### Acknowledgements\n
+        <hr>\n
+        ${acknowledgements.trim()}\n
+        <br />`
+
+        setMarkdown(markdown);
+    }, [title, description, intro, installation, usage, contribute, acknowledgements]);
 
     return (
         <div className="App">
@@ -98,52 +169,67 @@ const App = () => {
                     GitHub README Generator by Forbes Miyasato
                 </h1>
 
-                <Form>
+                <Form onKeyDown={handleKeyDown}>
                     <TextForm
                         id="form-title"
                         label="Title"
                         type="text"
+                        placeholder="Project name..."
+                        text="All inputs are optional"
+                        onChange={handleTitleChange}
                     ></TextForm>
                     <TextForm
                         id="form-description"
                         label="Description"
                         as="textarea"
                         placeholder="Brief Description..."
+                        onChange={handleDescriptionChange}
                     ></TextForm>
                     <TextForm
                         id="form-intro"
                         label="Introduction"
                         as="textarea"
                         placeholder="Why did you create this project..."
+                        onChange={handleIntroChange}
                     ></TextForm>
                     <TextForm
                         id="form-installation "
                         label="Get Started"
                         placeholder="Installation instructions..."
                         as="textarea"
+                        onChange={handleInstallationChange}
                     ></TextForm>
                     <TextForm
                         id="form-usage"
                         label="Usage"
                         placeholder="Explain how to use this project..."
                         as="textarea"
+                        onChange={handleUsageChange}
                     ></TextForm>
                     <TextForm
                         id="form-contribute"
                         label="Contribute"
                         placeholder="Explain how people can contribute to this project..."
                         as="textarea"
+                        onChange={handleContributeChange}
                     ></TextForm>
                     <TextForm
                         id="form-acknowledgement"
                         label="Acknowledgements"
                         placeholder="Anybody you wish to thank for helping or collaborating with you on this project..."
                         as="textarea"
+                        onChange={handleAcknowledgementsChange}
                     ></TextForm>
                 </Form>
-                <Button variant="outline-primary mr-2"><Download /> Get Markdown</Button>
-                <Button variant="outline-success mr-2"><CloudUpload /> Upload To Github</Button>
-                <Button variant="outline-info"><Eye /> Preview</Button>
+                <Button variant="outline-primary mr-2">
+                    <Download /> Get Markdown
+                </Button>
+                <Button variant="outline-success mr-2">
+                    <CloudUpload /> Upload To Github
+                </Button>
+                <Button variant="outline-info">
+                    <Eye /> Preview
+                </Button>
             </Container>
             {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
 
