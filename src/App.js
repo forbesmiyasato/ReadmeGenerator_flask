@@ -9,11 +9,11 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Modal from "./components/modal";
-import RepoList from "./components/repoList";
+import { useAlert, positions, types } from "react-alert";
 import { Download, CloudUpload, Eye } from "react-bootstrap-icons";
 
 const App = () => {
-    const [user, setUser] = useState(null);
+    const [gitHubUsername, setGitHubUsername] = useState("");
     const [accessToken, setAccessToken] = useState("");
     const [markdown, setMarkdown] = useState("");
     const [title, setTitle] = useState("");
@@ -28,6 +28,7 @@ const App = () => {
     const [userRepoUrl, setUserRepoUrl] = useState("");
     const [repos, setRepos] = useState([]);
     const [openRepoModal, setOpenRepoModal] = useState(false);
+    const alert = useAlert();
 
     //initialize firebase
     if (!firebase.apps.length) {
@@ -43,10 +44,13 @@ const App = () => {
             .auth()
             .signOut()
             .then(function () {
-                setUser(null);
+                setGitHubUsername("");
                 setAccessToken("");
                 setUserRepoUrl("");
                 setRepos([]);
+                alert.show("Signed out of Github successfully!", {
+                    type: types.SUCCESS,
+                });
             })
             .catch(function (error) {
                 // An error happened.
@@ -100,37 +104,42 @@ const App = () => {
     };
 
     const HandleUploadToGitHubClicked = () => {
-        if (!user) {
-        firebase
-            .auth()
-            .signInWithPopup(provider)
-            .then(async function (result) {
-                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-                var token = result.credential.accessToken;
-                setAccessToken(token);
-                // The signed-in user info.
-                var user = result.user;
-                setUser(user);
-                // Set state to be user authenticated
-                setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
-                // We want the repo list modal to show up next
-                setOpenRepoModal(true);
-            })
-            .catch(function (error) {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-                // ...
-            });
+        if (!gitHubUsername) {
+            firebase
+                .auth()
+                .signInWithPopup(provider)
+                .then(async function (result) {
+                    // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+                    var token = result.credential.accessToken;
+                    setAccessToken(token);
+                    // The signed-in user info.
+                    var username = result.additionalUserInfo.username;
+                    setGitHubUsername(username);
+                    // Set state to be user authenticated
+                    setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
+                    // We want the repo list modal to show up next
+                    setOpenRepoModal(true);
+                    console.log(result);
+                })
+                .catch(function (error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    // The email of the user's account used.
+                    var email = error.email;
+                    // The firebase.auth.AuthCredential type that was used.
+                    var credential = error.credential;
+                    // ...
+                    alert.show(errorMessage, {
+                        type: types.ERROR
+                    });
+                });
         } else {
             setOpenRepoModal(true);
         }
     };
 
+    console.log(gitHubUsername);
     const uploadReadMeToGithub = async (repoName) => {
         let success = true;
         try {
@@ -140,7 +149,7 @@ const App = () => {
             let sha = response.data.sha;
             console.log(response);
             axios.put(
-                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
+                `https://api.github.com/repos/${gitHubUsername}/${repoName}/contents/README.md`,
                 {
                     message: "Update README.md from Forbes' README Generator",
                     content: btoa(unescape(encodeURIComponent(markdown))),
@@ -155,19 +164,20 @@ const App = () => {
             );
         } catch (err) {
             try {
-            axios.put(
-                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
-                {
-                    message: "Update README.md from Forbes's README Generator",
-                    content: btoa(unescape(encodeURIComponent(markdown))),
-                },
-                {
-                    headers: {
-                        Authorization: `token ${accessToken}`,
-                        Accept: "application/vnd.github.v3+json",
+                axios.put(
+                    `https://api.github.com/repos/${gitHubUsername}/${repoName}/contents/README.md`,
+                    {
+                        message:
+                            "Updated README.md with Forbes's README Generator",
+                        content: btoa(unescape(encodeURIComponent(markdown))),
                     },
-                }
-            );
+                    {
+                        headers: {
+                            Authorization: `token ${accessToken}`,
+                            Accept: "application/vnd.github.v3+json",
+                        },
+                    }
+                );
             } catch (err) {
                 success = false;
                 alert(err);
@@ -175,7 +185,21 @@ const App = () => {
         }
         setModalShow(false);
         if (success) {
-            alert("Your README was updated successfully!")
+            alert.show(
+                <div>
+                    Uploaded to GitHub successfully!&nbsp;
+                    <a
+                        href={`https://github.com/${gitHubUsername}/${repoName}`}
+                        target="_blank"
+                    >
+                        Click Here
+                    </a>{" "}
+                    to check it out.
+                </div>,
+                {
+                    type: types.SUCCESS
+                }
+            );
         }
     };
 
@@ -188,7 +212,7 @@ const App = () => {
         setUsage("");
         setContribute("");
         setAcknowledgements("");
-    }
+    };
 
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
     useEffect(() => {
@@ -199,7 +223,7 @@ const App = () => {
             //Create a list with just the name and id attribute
             let repos = [];
 
-            response.data.map(({ id, name }) => {
+            response.data.forEach(({ id, name }) => {
                 if (name) {
                     let repo = {};
                     repo["id"] = id;
@@ -213,6 +237,8 @@ const App = () => {
             setModalType("github");
         };
 
+        console.log(userRepoUrl)
+        console.log(openRepoModal)
         if (userRepoUrl && openRepoModal) {
             fetchUserRepo();
         }
@@ -220,7 +246,7 @@ const App = () => {
         return () => {
             setOpenRepoModal(false);
         };
-    }, [openRepoModal]);
+    }, [openRepoModal, userRepoUrl]);
 
     useEffect(() => {
         let markdown = `
@@ -344,15 +370,15 @@ ${acknowledgements.trim()}\n
                     >
                         <Eye /> Preview
                     </Button>
-                    {user && (
-                        <Button variant="outline-warning mr-2" onClick={signOut}>
+                    {gitHubUsername && (
+                        <Button
+                            variant="outline-warning mr-2"
+                            onClick={signOut}
+                        >
                             Sign out of Github
                         </Button>
                     )}
-                    <Button
-                        variant="outline-danger"
-                        onClick={resetInputs}
-                    >
+                    <Button variant="outline-danger" onClick={resetInputs}>
                         <Eye /> Reset All Inputs
                     </Button>
                 </div>
