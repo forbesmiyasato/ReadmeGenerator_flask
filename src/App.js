@@ -148,7 +148,23 @@ const App = () => {
                 }
             );
         } catch (err) {
-            alert(err);
+            try {
+            axios.put(
+                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
+                {
+                    message: "Update README.md from Forbes's README Generator",
+                    content: btoa(unescape(encodeURIComponent(markdown))),
+                },
+                {
+                    headers: {
+                        Authorization: `token ${accessToken}`,
+                        Accept: "application/vnd.github.v3+json",
+                    },
+                }
+            );
+            } catch (err) {
+                alert(err);
+            }
         }
     };
 
