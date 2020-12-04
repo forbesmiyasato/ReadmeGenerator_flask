@@ -8,6 +8,8 @@ import TextForm from "./components/textForm";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Modal from "./components/modal";
+
 import { Download, CloudUpload, Eye } from "react-bootstrap-icons";
 
 const App = () => {
@@ -21,6 +23,8 @@ const App = () => {
     const [usage, setUsage] = useState("");
     const [contribute, setContribute] = useState("");
     const [acknowledgements, setAcknowledgements] = useState("");
+    const [modalShow, setModalShow] = useState(false);
+    const [modalType, setModalType] = useState("");
 
     //initialize firebase
     if (!firebase.apps.length) {
@@ -106,6 +110,11 @@ const App = () => {
         setAcknowledgements(element.target.value);
     };
 
+    const handlePreviewClick = () => {
+        setModalShow(true);
+        setModalType('preview');
+    };
+
     const updateReadMe = async (token) => {
         try {
             let response = await await axios.get(
@@ -132,35 +141,42 @@ const App = () => {
         }
     };
 
-    console.log(markdown)
     useEffect(() => {
         let markdown = `
-        # ${title.trim()} \n
-        ${description.trim()}\n
-        <br />\n
-        ### Welcome to ${title.trim()}\n
-        <hr>\n
-        ${intro.trim()}\n
-        <br />\n
-        ### Get Started\n
-        <hr>\n
-        ${installation.trim()}\n
-        <br />\n
-        ### Usage\n
-        <hr>\n
-        ${usage.trim()}\n
-        <br />\n
-        ### Contribute\n
-        <hr>\n
-        ${contribute.trim()}\n
-        <br />\n
-        ### Acknowledgements\n
-        <hr>\n
-        ${acknowledgements.trim()}\n
-        <br />`
+# ${title.trim()}\n
+${description.trim()}\n
+<br />\n
+### Welcome to ${title.trim()}!\n
+<hr>\n
+${intro.trim()}\n
+<br />\n\n
+### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n
+<hr>\n
+${installation.trim()}\n
+<br />\n
+### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n
+<hr>\n
+${usage.trim()}\n
+<br />\n
+### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n
+<hr>\n
+${contribute.trim()}\n
+<br />\n
+### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n
+<hr>\n
+${acknowledgements.trim()}\n
+<br />`;
 
         setMarkdown(markdown);
-    }, [title, description, intro, installation, usage, contribute, acknowledgements]);
+    }, [
+        title,
+        description,
+        intro,
+        installation,
+        usage,
+        contribute,
+        acknowledgements,
+    ]);
 
     return (
         <div className="App">
@@ -227,10 +243,12 @@ const App = () => {
                 <Button variant="outline-success mr-2">
                     <CloudUpload /> Upload To Github
                 </Button>
-                <Button variant="outline-info">
+                <Button variant="outline-info" onClick={handlePreviewClick}>
                     <Eye /> Preview
                 </Button>
             </Container>
+            <Modal show={modalShow} onHide={() => setModalShow(false)} markdown={markdown} type={modalType} />
+
             {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
 
             {user ? (
