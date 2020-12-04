@@ -27,6 +27,7 @@ const App = () => {
     const [modalType, setModalType] = useState("");
     const [userRepoUrl, setUserRepoUrl] = useState("");
     const [repos, setRepos] = useState([]);
+    const [openRepoModal, setOpenRepoModal] = useState(false);
 
     //initialize firebase
     if (!firebase.apps.length) {
@@ -99,6 +100,7 @@ const App = () => {
     };
 
     const HandleUploadToGitHubClicked = () => {
+        if (!user) {
         firebase
             .auth()
             .signInWithPopup(provider)
@@ -111,6 +113,8 @@ const App = () => {
                 setUser(user);
                 // Set state to be user authenticated
                 setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
+                // We want the repo list modal to show up next
+                setOpenRepoModal(true);
             })
             .catch(function (error) {
                 // Handle Errors here.
@@ -122,11 +126,13 @@ const App = () => {
                 var credential = error.credential;
                 // ...
             });
+        } else {
+            setOpenRepoModal(true);
+        }
     };
 
     const uploadReadMeToGithub = async (repoName) => {
-        console.log("TEST" + repoName);
-        console.log(markdown);
+        let success = true;
         try {
             let response = await axios.get(
                 `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`
@@ -136,7 +142,7 @@ const App = () => {
             axios.put(
                 `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
                 {
-                    message: "Update README.md from Forbes's README Generator",
+                    message: "Update README.md from Forbes' README Generator",
                     content: btoa(unescape(encodeURIComponent(markdown))),
                     sha: sha,
                 },
@@ -163,8 +169,13 @@ const App = () => {
                 }
             );
             } catch (err) {
+                success = false;
                 alert(err);
             }
+        }
+        setModalShow(false);
+        if (success) {
+            alert("Your README was updated successfully!")
         }
     };
 
@@ -202,14 +213,14 @@ const App = () => {
             setModalType("github");
         };
 
-        if (userRepoUrl) {
+        if (userRepoUrl && openRepoModal) {
             fetchUserRepo();
         }
 
         return () => {
-            setUserRepoUrl("");
+            setOpenRepoModal(false);
         };
-    }, [userRepoUrl]);
+    }, [openRepoModal]);
 
     useEffect(() => {
         let markdown = `

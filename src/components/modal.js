@@ -14,10 +14,14 @@ const CustomModal = (props) => {
         console.log(repoName);
     };
 
+    const onHide = () => {
+        setSelectedRepo("");
+        props.onHide();
+    }
     return props.type === "github" ? (
         <Modal
             show={props.show}
-            onHide={props.onHide}
+            onHide={onHide}
             backdrop="static"
             keyboard={false}
             aria-labelledby="contained-modal-title-vcenter"
@@ -34,7 +38,7 @@ const CustomModal = (props) => {
                 />
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={props.onHide}>
+                <Button variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
                 <Button
