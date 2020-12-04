@@ -9,8 +9,14 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Modal from "./components/modal";
-import { useAlert, positions, types } from "react-alert";
-import { Download, CloudUpload, Eye } from "react-bootstrap-icons";
+import { useAlert, types } from "react-alert";
+import {
+    CodeSlash,
+    CloudUpload,
+    Eye,
+    BootstrapReboot,
+    ArrowBarLeft,
+} from "react-bootstrap-icons";
 
 const App = () => {
     const [gitHubUsername, setGitHubUsername] = useState("");
@@ -131,7 +137,7 @@ const App = () => {
                     var credential = error.credential;
                     // ...
                     alert.show(errorMessage, {
-                        type: types.ERROR
+                        type: types.ERROR,
                     });
                 });
         } else {
@@ -190,6 +196,7 @@ const App = () => {
                     Uploaded to GitHub successfully!&nbsp;
                     <a
                         href={`https://github.com/${gitHubUsername}/${repoName}`}
+                        rel="noreferrer"
                         target="_blank"
                     >
                         Click Here
@@ -197,7 +204,7 @@ const App = () => {
                     to check it out.
                 </div>,
                 {
-                    type: types.SUCCESS
+                    type: types.SUCCESS,
                 }
             );
         }
@@ -237,14 +244,15 @@ const App = () => {
             setModalType("github");
         };
 
-        console.log(userRepoUrl)
-        console.log(openRepoModal)
+        console.log(userRepoUrl);
+        console.log(openRepoModal);
         if (userRepoUrl && openRepoModal) {
             fetchUserRepo();
         }
 
         return () => {
             setOpenRepoModal(false);
+            console.log("FALSE")
         };
     }, [openRepoModal, userRepoUrl]);
 
@@ -356,7 +364,7 @@ ${acknowledgements.trim()}\n
                         variant="outline-primary mr-2"
                         onClick={handleMarkdownClick}
                     >
-                        <Download /> Get Markdown
+                        <CodeSlash /> Get Markdown
                     </Button>
                     <Button
                         variant="outline-success mr-2"
@@ -375,11 +383,11 @@ ${acknowledgements.trim()}\n
                             variant="outline-warning mr-2"
                             onClick={signOut}
                         >
-                            Sign out of Github
+                            <ArrowBarLeft /> Sign out of Github
                         </Button>
                     )}
                     <Button variant="outline-danger" onClick={resetInputs}>
-                        <Eye /> Reset All Inputs
+                        <BootstrapReboot /> Reset All Inputs
                     </Button>
                 </div>
             </Container>
