@@ -42,7 +42,10 @@ const App = () => {
             .auth()
             .signOut()
             .then(function () {
-                window.location.reload();
+                setUser(null);
+                setAccessToken("");
+                setUserRepoUrl("");
+                setRepos([]);
             })
             .catch(function (error) {
                 // An error happened.
@@ -122,8 +125,8 @@ const App = () => {
     };
 
     const uploadReadMeToGithub = async (repoName) => {
-        console.log("TEST" + repoName)
-        console.log(markdown)
+        console.log("TEST" + repoName);
+        console.log(markdown);
         try {
             let response = await axios.get(
                 `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`
@@ -148,6 +151,17 @@ const App = () => {
             alert(err);
         }
     };
+
+    const resetInputs = () => {
+        setMarkdown("");
+        setTitle("");
+        setDescription("");
+        setIntro("");
+        setInstallation("");
+        setUsage("");
+        setContribute("");
+        setAcknowledgements("");
+    }
 
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
     useEffect(() => {
@@ -177,8 +191,8 @@ const App = () => {
         }
 
         return () => {
-            setUserRepoUrl('');
-        }
+            setUserRepoUrl("");
+        };
     }, [userRepoUrl]);
 
     useEffect(() => {
@@ -231,7 +245,8 @@ ${acknowledgements.trim()}\n
                         label="Title"
                         type="text"
                         placeholder="Project name..."
-                        text="All inputs are optional"
+                        text="All inputs are currently optional"
+                        value={title}
                         onChange={handleTitleChange}
                     ></TextForm>
                     <TextForm
@@ -239,6 +254,7 @@ ${acknowledgements.trim()}\n
                         label="Description"
                         as="textarea"
                         placeholder="Brief Description..."
+                        value={description}
                         onChange={handleDescriptionChange}
                     ></TextForm>
                     <TextForm
@@ -246,6 +262,7 @@ ${acknowledgements.trim()}\n
                         label="Introduction"
                         as="textarea"
                         placeholder="Why did you create this project..."
+                        value={intro}
                         onChange={handleIntroChange}
                     ></TextForm>
                     <TextForm
@@ -253,6 +270,7 @@ ${acknowledgements.trim()}\n
                         label="Get Started"
                         placeholder="Installation instructions..."
                         as="textarea"
+                        value={installation}
                         onChange={handleInstallationChange}
                     ></TextForm>
                     <TextForm
@@ -260,6 +278,7 @@ ${acknowledgements.trim()}\n
                         label="Usage"
                         placeholder="Explain how to use this project..."
                         as="textarea"
+                        value={usage}
                         onChange={handleUsageChange}
                     ></TextForm>
                     <TextForm
@@ -267,6 +286,7 @@ ${acknowledgements.trim()}\n
                         label="Contribute"
                         placeholder="Explain how people can contribute to this project..."
                         as="textarea"
+                        value={contribute}
                         onChange={handleContributeChange}
                     ></TextForm>
                     <TextForm
@@ -274,24 +294,41 @@ ${acknowledgements.trim()}\n
                         label="Acknowledgements"
                         placeholder="Anybody you wish to thank for helping or collaborating with you on this project..."
                         as="textarea"
+                        value={acknowledgements}
                         onChange={handleAcknowledgementsChange}
                     ></TextForm>
                 </Form>
-                <Button
-                    variant="outline-primary mr-2"
-                    onClick={handleMarkdownClick}
-                >
-                    <Download /> Get Markdown
-                </Button>
-                <Button
-                    variant="outline-success mr-2"
-                    onClick={HandleUploadToGitHubClicked}
-                >
-                    <CloudUpload /> Upload To Github
-                </Button>
-                <Button variant="outline-info" onClick={handlePreviewClick}>
-                    <Eye /> Preview
-                </Button>
+                <div className="mb-5">
+                    <Button
+                        variant="outline-primary mr-2"
+                        onClick={handleMarkdownClick}
+                    >
+                        <Download /> Get Markdown
+                    </Button>
+                    <Button
+                        variant="outline-success mr-2"
+                        onClick={HandleUploadToGitHubClicked}
+                    >
+                        <CloudUpload /> Upload To Github
+                    </Button>
+                    <Button
+                        variant="outline-info mr-2"
+                        onClick={handlePreviewClick}
+                    >
+                        <Eye /> Preview
+                    </Button>
+                    {user && (
+                        <Button variant="outline-warning mr-2" onClick={signOut}>
+                            Sign out of Github
+                        </Button>
+                    )}
+                    <Button
+                        variant="outline-danger"
+                        onClick={resetInputs}
+                    >
+                        <Eye /> Reset All Inputs
+                    </Button>
+                </div>
             </Container>
             <Modal
                 show={modalShow}
@@ -301,28 +338,6 @@ ${acknowledgements.trim()}\n
                 type={modalType}
                 onRepoSelect={uploadReadMeToGithub}
             />
-
-            {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
-
-            {user ? (
-                <>
-                    <img
-                        src={user.photoURL}
-                        style={{
-                            width: "200px",
-                            height: "200px",
-                            borderRadius: "50%",
-                        }}
-                    />
-                    <br />
-
-                    <button onClick={signOut}>Sign out</button>
-                </>
-            ) : (
-                <button onClick={HandleUploadToGitHubClicked}>
-                    Sign in with Github
-                </button>
-            )}
         </div>
     );
 };
