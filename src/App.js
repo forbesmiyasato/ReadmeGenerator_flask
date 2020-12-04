@@ -115,6 +115,11 @@ const App = () => {
         setModalType('preview');
     };
 
+    const handleMarkdownClick = () => {
+        setModalShow(true);
+        setModalType('markdown');
+    };
+
     const updateReadMe = async (token) => {
         try {
             let response = await await axios.get(
@@ -237,7 +242,7 @@ ${acknowledgements.trim()}\n
                         onChange={handleAcknowledgementsChange}
                     ></TextForm>
                 </Form>
-                <Button variant="outline-primary mr-2">
+                <Button variant="outline-primary mr-2" onClick={handleMarkdownClick}>
                     <Download /> Get Markdown
                 </Button>
                 <Button variant="outline-success mr-2">

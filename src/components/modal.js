@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Preview from "./preview";
+import Markdown from "./markdown";
 
 const modal = (props) => {
     console.log(props);
@@ -13,6 +14,7 @@ const modal = (props) => {
             centered
         >
             {props.type === 'preview' && <Preview markdown={props.markdown} />}
+            {props.type === 'markdown' && <Markdown markdown={props.markdown} />}
             <Modal.Footer>
                 <Button onClick={props.onHide}>Close</Button>
             </Modal.Footer>
