@@ -2,7 +2,6 @@ import React from "react";
 import Modal from "react-bootstrap/Modal";
 
 const Markdown = ({ markdown }) => {
-    console.log(markdown)
     return (
         <>
             <Modal.Header closeButton>

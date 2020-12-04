@@ -8,7 +8,6 @@ import RepoList from "./repoList";
 const CustomModal = (props) => {
     const [selectedRepo, setSelectedRepo] = useState("");
 
-    console.log(props);
     const handleRepoSelection = (repoName) => {
         setSelectedRepo(repoName);
         console.log(repoName);

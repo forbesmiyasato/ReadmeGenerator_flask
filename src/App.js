@@ -19,8 +19,16 @@ import {
 } from "react-bootstrap-icons";
 
 const App = () => {
-    const [gitHubUsername, setGitHubUsername] = useState("");
-    const [accessToken, setAccessToken] = useState("");
+    // const [gitHubUsername, setGitHubUsername] = useState("");
+    // const [accessToken, setAccessToken] = useState("");
+    // const [userRepoUrl, setUserRepoUrl] = useState("");
+    // const [repos, setRepos] = useState([]);
+    const [gitHubInfo, setGitHubInfo] = useState({
+        username: "",
+        accessToken: "",
+        userRepoUrl: "",
+    });
+    const [repos, setRepos] = useState([]);
     const [markdown, setMarkdown] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -31,9 +39,6 @@ const App = () => {
     const [acknowledgements, setAcknowledgements] = useState("");
     const [modalShow, setModalShow] = useState(false);
     const [modalType, setModalType] = useState("");
-    const [userRepoUrl, setUserRepoUrl] = useState("");
-    const [repos, setRepos] = useState([]);
-    const [openRepoModal, setOpenRepoModal] = useState(false);
     const alert = useAlert();
 
     //initialize firebase
@@ -50,10 +55,12 @@ const App = () => {
             .auth()
             .signOut()
             .then(function () {
-                setGitHubUsername("");
-                setAccessToken("");
-                setUserRepoUrl("");
-                setRepos([]);
+                setGitHubInfo({
+                    username: "",
+                    accessToken: "",
+                    userRepoUrl: "",
+                    repos: [],
+                });
                 alert.show("Signed out of Github successfully!", {
                     type: types.SUCCESS,
                 });
@@ -110,22 +117,24 @@ const App = () => {
     };
 
     const HandleUploadToGitHubClicked = () => {
-        if (!gitHubUsername) {
+        if (!gitHubInfo.username) {
             firebase
                 .auth()
                 .signInWithPopup(provider)
                 .then(async function (result) {
                     // This gives you a GitHub Access Token. You can use it to access the GitHub API.
                     var token = result.credential.accessToken;
-                    setAccessToken(token);
                     // The signed-in user info.
                     var username = result.additionalUserInfo.username;
-                    setGitHubUsername(username);
-                    // Set state to be user authenticated
-                    setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
+                    // The url to fetch all users public repositories
+                    var url = result.additionalUserInfo.profile.repos_url;
                     // We want the repo list modal to show up next
-                    setOpenRepoModal(true);
-                    console.log(result);
+                    setGitHubInfo({
+                        ...gitHubInfo,
+                        accessToken: token,
+                        username: username,
+                        userRepoUrl: url,
+                    });
                 })
                 .catch(function (error) {
                     // Handle Errors here.
@@ -141,11 +150,11 @@ const App = () => {
                     });
                 });
         } else {
-            setOpenRepoModal(true);
+            setModalShow(true);
+            setModalType("github");
         }
     };
 
-    console.log(gitHubUsername);
     const uploadReadMeToGithub = async (repoName) => {
         let success = true;
         try {
@@ -155,7 +164,7 @@ const App = () => {
             let sha = response.data.sha;
             console.log(response);
             axios.put(
-                `https://api.github.com/repos/${gitHubUsername}/${repoName}/contents/README.md`,
+                `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                 {
                     message: "Update README.md from Forbes' README Generator",
                     content: btoa(unescape(encodeURIComponent(markdown))),
@@ -163,7 +172,7 @@ const App = () => {
                 },
                 {
                     headers: {
-                        Authorization: `token ${accessToken}`,
+                        Authorization: `token ${gitHubInfo.accessToken}`,
                         Accept: "application/vnd.github.v3+json",
                     },
                 }
@@ -171,7 +180,7 @@ const App = () => {
         } catch (err) {
             try {
                 axios.put(
-                    `https://api.github.com/repos/${gitHubUsername}/${repoName}/contents/README.md`,
+                    `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                     {
                         message:
                             "Updated README.md with Forbes's README Generator",
@@ -179,7 +188,7 @@ const App = () => {
                     },
                     {
                         headers: {
-                            Authorization: `token ${accessToken}`,
+                            Authorization: `token ${gitHubInfo.accessToken}`,
                             Accept: "application/vnd.github.v3+json",
                         },
                     }
@@ -193,9 +202,9 @@ const App = () => {
         if (success) {
             alert.show(
                 <div>
-                    Uploaded to GitHub successfully!&nbsp;
+                    Uploaded to GitHub successfully!{" "}
                     <a
-                        href={`https://github.com/${gitHubUsername}/${repoName}`}
+                        href={`https://github.com/${gitHubInfo.username}/${repoName}`}
                         rel="noreferrer"
                         target="_blank"
                     >
@@ -223,9 +232,10 @@ const App = () => {
 
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
     useEffect(() => {
+        console.log(gitHubInfo);
         // Fetch users repositories to display
         const fetchUserRepo = async () => {
-            let response = await axios.get(userRepoUrl);
+            let response = await axios.get(gitHubInfo.userRepoUrl);
 
             //Create a list with just the name and id attribute
             let repos = [];
@@ -239,22 +249,16 @@ const App = () => {
                 }
             });
 
+            console.log(repos);
             setRepos(repos);
             setModalShow(true);
             setModalType("github");
         };
 
-        console.log(userRepoUrl);
-        console.log(openRepoModal);
-        if (userRepoUrl && openRepoModal) {
+        if (gitHubInfo.userRepoUrl) {
             fetchUserRepo();
         }
-
-        return () => {
-            setOpenRepoModal(false);
-            console.log("FALSE")
-        };
-    }, [openRepoModal, userRepoUrl]);
+    }, [gitHubInfo]);
 
     useEffect(() => {
         let markdown = `
@@ -378,7 +382,7 @@ ${acknowledgements.trim()}\n
                     >
                         <Eye /> Preview
                     </Button>
-                    {gitHubUsername && (
+                    {gitHubInfo.username && (
                         <Button
                             variant="outline-warning mr-2"
                             onClick={signOut}
