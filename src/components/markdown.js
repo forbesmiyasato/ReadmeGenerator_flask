@@ -11,7 +11,7 @@ const Markdown = ({ markdown }) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div class="bg-light pl-1 pr-1 border border-dark rounded">
+                <div className="bg-light pl-1 pr-1 border border-dark rounded">
                 {markdown.split("\n").map((i, key) => {
                     return <p key={key}>{i}</p>;
                 })}

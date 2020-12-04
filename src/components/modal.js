@@ -8,6 +8,7 @@ import RepoList from "./repoList";
 const CustomModal = (props) => {
     const [selectedRepo, setSelectedRepo] = useState("");
 
+    console.log(props);
     const handleRepoSelection = (repoName) => {
         setSelectedRepo(repoName);
         console.log(repoName);
@@ -15,7 +16,8 @@ const CustomModal = (props) => {
 
     return props.type === "github" ? (
         <Modal
-            {...props}
+            show={props.show}
+            onHide={props.onHide}
             backdrop="static"
             keyboard={false}
             aria-labelledby="contained-modal-title-vcenter"
@@ -35,14 +37,18 @@ const CustomModal = (props) => {
                 <Button variant="secondary" onClick={props.onHide}>
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={() => props.onRepoSelect(selectedRepo)}>
+                <Button
+                    variant="primary"
+                    onClick={() => props.onRepoSelect(selectedRepo)}
+                >
                     Confirm Repository
                 </Button>
             </Modal.Footer>
         </Modal>
     ) : (
         <Modal
-            {...props}
+            show={props.show}
+            onHide={props.onHide}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered

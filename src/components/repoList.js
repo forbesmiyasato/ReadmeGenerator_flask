@@ -1,7 +1,7 @@
 import React from "react";
 
 const RepoList = ({ repos, onRepoSelect, selectedRepo }) => {
-    console.log(onRepoSelect)
+    console.log(selectedRepo)
     return (
         repos &&
         repos.length > 0 &&
@@ -10,8 +10,8 @@ const RepoList = ({ repos, onRepoSelect, selectedRepo }) => {
                 <div
                     key={repo.id}
                     className={
-                        "shadow-sm p-3 mb-2 bg-white rounded" +
-                        (repo.name === selectedRepo ? "bg-light" : "")
+                        "shadow-sm p-3 mb-2 rounded " +
+                        (repo.name === selectedRepo ? "bg-selected-repo" : "bg-white")
                     }
                     onClick={() => onRepoSelect(repo.name)}
                 >

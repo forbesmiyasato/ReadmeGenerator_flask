@@ -168,13 +168,16 @@ const App = () => {
             });
 
             setRepos(repos);
-            console.log(repos);
             setModalShow(true);
             setModalType("github");
         };
 
         if (userRepoUrl) {
             fetchUserRepo();
+        }
+
+        return () => {
+            setUserRepoUrl('');
         }
     }, [userRepoUrl]);
 
