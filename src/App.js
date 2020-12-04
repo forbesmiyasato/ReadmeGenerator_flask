@@ -9,7 +9,7 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Modal from "./components/modal";
-
+import RepoList from "./components/repoList";
 import { Download, CloudUpload, Eye } from "react-bootstrap-icons";
 
 const App = () => {
@@ -26,6 +26,8 @@ const App = () => {
     const [modalShow, setModalShow] = useState(false);
     const [modalType, setModalType] = useState("");
     const [userRepoUrl, setUserRepoUrl] = useState("");
+    const [repos, setRepos] = useState([]);
+
     //initialize firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -44,32 +46,6 @@ const App = () => {
             })
             .catch(function (error) {
                 // An error happened.
-            });
-    };
-
-    const HandleUploadToGitHub = () => {
-        firebase
-            .auth()
-            .signInWithPopup(provider)
-            .then(async function (result) {
-                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-                var token = result.credential.accessToken;
-                setAccessToken(token);
-                // The signed-in user info.
-                var user = result.user;
-                setUser(user);
-                // Set state to be user authenticated
-                setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
-            })
-            .catch(function (error) {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-                // ...
             });
     };
 
@@ -119,23 +95,49 @@ const App = () => {
         setModalType("markdown");
     };
 
-    const updateReadMe = async (token) => {
+    const HandleUploadToGitHubClicked = () => {
+        firebase
+            .auth()
+            .signInWithPopup(provider)
+            .then(async function (result) {
+                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+                var token = result.credential.accessToken;
+                setAccessToken(token);
+                // The signed-in user info.
+                var user = result.user;
+                setUser(user);
+                // Set state to be user authenticated
+                setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
+            })
+            .catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+            });
+    };
+
+    const uploadReadMeToGithub = async (repoName) => {
         try {
-            let response = await await axios.get(
-                "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md"
+            let response = await axios.get(
+                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`
             );
             let sha = response.data.sha;
             console.log(response);
             axios.put(
-                "https://api.github.com/repos/forbesmiyasato/CodingQuestion/contents/README.md",
+                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
                 {
-                    message: "message",
+                    message: "Update README.md from Forbes's README Generator",
                     content: btoa(markdown),
                     sha: sha,
                 },
                 {
                     headers: {
-                        Authorization: `token ${token}`,
+                        Authorization: `token ${accessToken}`,
                         Accept: "application/vnd.github.v3+json",
                     },
                 }
@@ -150,9 +152,23 @@ const App = () => {
         // Fetch users repositories to display
         const fetchUserRepo = async () => {
             let response = await axios.get(userRepoUrl);
-            // let repos = response.json();
-            console.log(response);
-            // console.log(repos)
+
+            //Create a list with just the name and id attribute
+            let repos = [];
+
+            response.data.map(({ id, name }) => {
+                if (name) {
+                    let repo = {};
+                    repo["id"] = id;
+                    repo["name"] = name;
+                    repos.push(repo);
+                }
+            });
+
+            setRepos(repos);
+            console.log(repos);
+            setModalShow(true);
+            setModalType("github");
         };
 
         if (userRepoUrl) {
@@ -262,7 +278,10 @@ ${acknowledgements.trim()}\n
                 >
                     <Download /> Get Markdown
                 </Button>
-                <Button variant="outline-success mr-2">
+                <Button
+                    variant="outline-success mr-2"
+                    onClick={HandleUploadToGitHubClicked}
+                >
                     <CloudUpload /> Upload To Github
                 </Button>
                 <Button variant="outline-info" onClick={handlePreviewClick}>
@@ -273,7 +292,9 @@ ${acknowledgements.trim()}\n
                 show={modalShow}
                 onHide={() => setModalShow(false)}
                 markdown={markdown}
+                repos={repos}
                 type={modalType}
+                onRepoSelect={uploadReadMeToGithub}
             />
 
             {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
@@ -291,12 +312,9 @@ ${acknowledgements.trim()}\n
                     <br />
 
                     <button onClick={signOut}>Sign out</button>
-                    <button onClick={updateReadMe.bind(this, accessToken)}>
-                        Update ReadMe
-                    </button>
                 </>
             ) : (
-                <button onClick={HandleUploadToGitHub}>
+                <button onClick={HandleUploadToGitHubClicked}>
                     Sign in with Github
                 </button>
             )}
