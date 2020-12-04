@@ -25,7 +25,7 @@ const App = () => {
     const [acknowledgements, setAcknowledgements] = useState("");
     const [modalShow, setModalShow] = useState(false);
     const [modalType, setModalType] = useState("");
-
+    const [userRepoUrl, setUserRepoUrl] = useState("");
     //initialize firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -47,20 +47,19 @@ const App = () => {
             });
     };
 
-    const signInWithGithub = () => {
+    const HandleUploadToGitHub = () => {
         firebase
             .auth()
             .signInWithPopup(provider)
-            .then(function (result) {
+            .then(async function (result) {
                 // This gives you a GitHub Access Token. You can use it to access the GitHub API.
                 var token = result.credential.accessToken;
                 setAccessToken(token);
-                console.log(token);
                 // The signed-in user info.
                 var user = result.user;
                 setUser(user);
-                console.log(user);
-                // ...
+                // Set state to be user authenticated
+                setUserRepoUrl(result.additionalUserInfo.profile.repos_url);
             })
             .catch(function (error) {
                 // Handle Errors here.
@@ -112,12 +111,12 @@ const App = () => {
 
     const handlePreviewClick = () => {
         setModalShow(true);
-        setModalType('preview');
+        setModalType("preview");
     };
 
     const handleMarkdownClick = () => {
         setModalShow(true);
-        setModalType('markdown');
+        setModalType("markdown");
     };
 
     const updateReadMe = async (token) => {
@@ -145,6 +144,21 @@ const App = () => {
             alert(err);
         }
     };
+
+    //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
+    useEffect(() => {
+        // Fetch users repositories to display
+        const fetchUserRepo = async () => {
+            let response = await axios.get(userRepoUrl);
+            // let repos = response.json();
+            console.log(response);
+            // console.log(repos)
+        };
+
+        if (userRepoUrl) {
+            fetchUserRepo();
+        }
+    }, [userRepoUrl]);
 
     useEffect(() => {
         let markdown = `
@@ -242,7 +256,10 @@ ${acknowledgements.trim()}\n
                         onChange={handleAcknowledgementsChange}
                     ></TextForm>
                 </Form>
-                <Button variant="outline-primary mr-2" onClick={handleMarkdownClick}>
+                <Button
+                    variant="outline-primary mr-2"
+                    onClick={handleMarkdownClick}
+                >
                     <Download /> Get Markdown
                 </Button>
                 <Button variant="outline-success mr-2">
@@ -252,7 +269,12 @@ ${acknowledgements.trim()}\n
                     <Eye /> Preview
                 </Button>
             </Container>
-            <Modal show={modalShow} onHide={() => setModalShow(false)} markdown={markdown} type={modalType} />
+            <Modal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                markdown={markdown}
+                type={modalType}
+            />
 
             {user ? <p>Hello, {user.displayName}</p> : <p>Please sign in.</p>}
 
@@ -274,7 +296,9 @@ ${acknowledgements.trim()}\n
                     </button>
                 </>
             ) : (
-                <button onClick={signInWithGithub}>Sign in with Github</button>
+                <button onClick={HandleUploadToGitHub}>
+                    Sign in with Github
+                </button>
             )}
         </div>
     );

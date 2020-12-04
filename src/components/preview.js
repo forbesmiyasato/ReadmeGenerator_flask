@@ -11,7 +11,9 @@ const Preview = ({markdown}) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+            <div class="border border-light shadow-sm rounded p-2">
         <MarkdownPreview source={markdown} />
+        </div>
         </Modal.Body>
         </>
     )
