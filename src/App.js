@@ -1,21 +1,36 @@
 import React, { useEffect, useState } from "react";
-import withFirebaseAuth from "react-with-firebase-auth";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import firebaseConfig from "./firebaseConfig";
 import axios from "axios";
+import TextForm from "./components/textForm";
+import Form from "react-bootstrap/Form";
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+const App = () => {
+    if (!firebase.apps.length) {
+        firebase.initializeApp({});
+    }
 
-const App = ({ user, signOut }) => {
     var provider = new firebase.auth.GithubAuthProvider();
     provider.addScope("repo");
 
+    const [user, setUser] = useState(null);
     const [accessToken, setAccessToken] = useState("");
     const [data, setData] = useState("");
 
-    console.log("OUT", accessToken);
+    const signOut = () => {
+        firebase
+            .auth()
+            .signOut()
+            .then(function () {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                // An error happened.
+            });
+    };
+
     const signInWithGithub = () => {
         firebase
             .auth()
@@ -27,6 +42,8 @@ const App = ({ user, signOut }) => {
                 console.log(token);
                 // The signed-in user info.
                 var user = result.user;
+                setUser(user);
+                console.log(user);
                 // ...
             })
             .catch(function (error) {
@@ -89,6 +106,9 @@ const App = ({ user, signOut }) => {
     return (
         <div className="App">
             <header className="App-header">
+                <Form>
+                    <TextForm label="Title" type="textarea"></TextForm>
+                </Form>
                 {user ? (
                     <p>Hello, {user.displayName}</p>
                 ) : (
@@ -106,10 +126,7 @@ const App = ({ user, signOut }) => {
                             }}
                         />
                         <br />
-                        <textarea
-                            value={data}
-                            onChange={(event) => setData(event.target.value)}
-                        />
+
                         <button onClick={signOut}>Sign out</button>
                         <button onClick={updateReadMe.bind(this, accessToken)}>
                             Update ReadMe
@@ -125,14 +142,11 @@ const App = ({ user, signOut }) => {
     );
 };
 
-const firebaseAppAuth = firebaseApp.auth();
+// const firebaseAppAuth = firebaseApp.auth();
 
-const providers = {
-    githubProvider: new firebase.auth.GithubAuthProvider(),
-    scope: "repo",
-};
+// const providers = {
+//     githubProvider: new firebase.auth.GithubAuthProvider(),
+//     scope: "repo",
+// };
 
-export default withFirebaseAuth({
-    providers,
-    firebaseAppAuth,
-})(App);
+export default App;
