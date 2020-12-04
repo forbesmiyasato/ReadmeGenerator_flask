@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Preview from "./preview";
 import Markdown from "./markdown";
 import RepoList from "./repoList";
-const modal = (props) => {
+
+const CustomModal = (props) => {
+    const [selectedRepo, setSelectedRepo] = useState("");
+
+    const handleRepoSelection = (repoName) => {
+        setSelectedRepo(repoName);
+        console.log(repoName);
+    };
+
     return props.type === "github" ? (
         <Modal
             {...props}
@@ -17,13 +25,19 @@ const modal = (props) => {
                 <Modal.Title>Pick the repository</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <RepoList repos={props.repos}/>
+                <RepoList
+                    repos={props.repos}
+                    onRepoSelect={handleRepoSelection}
+                    selectedRepo={selectedRepo}
+                />
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={props.onHide}>
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={props.onRepoSelect}>Confirm Repository</Button>
+                <Button variant="primary" onClick={() => props.onRepoSelect(selectedRepo)}>
+                    Confirm Repository
+                </Button>
             </Modal.Footer>
         </Modal>
     ) : (
@@ -44,4 +58,4 @@ const modal = (props) => {
     );
 };
 
-export default modal;
+export default CustomModal;

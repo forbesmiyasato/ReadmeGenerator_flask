@@ -122,6 +122,8 @@ const App = () => {
     };
 
     const uploadReadMeToGithub = async (repoName) => {
+        console.log("TEST" + repoName)
+        console.log(markdown)
         try {
             let response = await axios.get(
                 `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`
@@ -132,7 +134,7 @@ const App = () => {
                 `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`,
                 {
                     message: "Update README.md from Forbes's README Generator",
-                    content: btoa(markdown),
+                    content: btoa(unescape(encodeURIComponent(markdown))),
                     sha: sha,
                 },
                 {
