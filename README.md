@@ -17,7 +17,7 @@ I developed this project as the final project for CS530: Internet, Web, and Clou
 
 <hr>
 
-Visit https://cs530-test-yxqexgpoza-uw.a.run.app/
+I'll add the link to the website after I switch to a free hosting.
 
 <br />
 
