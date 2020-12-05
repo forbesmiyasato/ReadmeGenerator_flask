@@ -5,7 +5,7 @@ FROM google/cloud-sdk
 MAINTAINER Forbes Miyasato "miyasato@pdx.edu"
 
 # Copy the contents of the current directory into the container directory /app
-COPY . /app
+COPY ./flask-backend /app
 
 # Set the working directory of the container to /app
 WORKDIR /app
