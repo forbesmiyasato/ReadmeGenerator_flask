@@ -46,6 +46,7 @@ const App = () => {
     var provider = new firebase.auth.GithubAuthProvider();
     provider.addScope("repo");
 
+    //Sign out the user using firebase authentication
     const signOut = () => {
         firebase
             .auth()
@@ -75,7 +76,9 @@ const App = () => {
         }
     };
 
-    //Methods to handle user data input
+    //The following 7 methods are to handle user data input. 
+    //Function names are descriptive to their use case.
+    //Sets content for each section to the current input value.
     const handleTitleChange = (element) => {
         setTitle(element.target.value);
     };
@@ -104,16 +107,20 @@ const App = () => {
         setAcknowledgements(element.target.value);
     };
 
+    //Handles the preview button being clicked. Opens the modal in preview mode.
     const handlePreviewClick = () => {
         setModalShow(true);
         setModalType("Preview");
     };
 
+    //Handles the markdown button being clicked. Opens the modal in markdown mode.
     const handleMarkdownClick = () => {
         setModalShow(true);
         setModalType("Markdown");
     };
 
+    //If the user hasn't logged in yet, logs in the user using Firebase authentication. Else,
+    //Opens the repository list modal.
     const HandleUploadToGitHubClicked = () => {
         if (!gitHubInfo.username) {
             firebase
@@ -147,15 +154,22 @@ const App = () => {
         }
     };
 
+    //Uploads the readme content to the Github repository. 
     const uploadReadMeToGithub = async (repoName) => {
         let success = true;
         setModalShow(false);
         try {
+            //In order to update the README content, a sha parameter is required in the request body.
+            //The sha value is unique to each commit. In order to get the proper sha value, we need to make
+            //a get request to fetch the latest sha. 
+            //This request will fail and redirect to the catch block below if the README.md file doesn't exist.
+            //In this case we want to create the README file instead of updating it. Hence, the sha value isn't needed.
             let response = await axios.get(
                 `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`
             );
             let sha = response.data.sha;
 
+            //Now update the README content
             await axios.put(
                 `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                 {
@@ -171,6 +185,7 @@ const App = () => {
                 }
             );
         } catch (err) {
+            //Failed to get content of README.md because it doesn't exist. In this case, we want to create the README.md file.
             try {
                 await axios.put(
                     `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
@@ -187,12 +202,14 @@ const App = () => {
                     }
                 );
             } catch (err) {
+                //Show alert if failed to upload to Github.
                 success = false;
                 alert.show("Failed to Upload to Github :(", {
                     type: types.ERROR,
                 });
             }
         }
+        //If didn't fail to upload to Github, show success alert that contains url to redirect user to the repository.
         if (success) {
             alert.show(
                 <div>
@@ -213,6 +230,7 @@ const App = () => {
         }
     };
 
+    //Resets all the README text inputs.
     const resetInputs = () => {
         setMarkdown("");
         setTitle("");
@@ -252,6 +270,7 @@ const App = () => {
         }
     }, [gitHubInfo]);
 
+    //Update the markdown content everytime an input field is modified.
     useEffect(() => {
         let markdown = "";
         if (title) {
@@ -402,7 +421,9 @@ const App = () => {
                         <BootstrapReboot /> Reset All Inputs
                     </Button>
                 </div>
-                <footer className="text-center mb-5">Made by Forbes Miyasato</footer>
+                <footer className="text-center mb-5">
+                    Made by Forbes Miyasato
+                </footer>
             </Container>
             <Modal
                 show={modalShow}

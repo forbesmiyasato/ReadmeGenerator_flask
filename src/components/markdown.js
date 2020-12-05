@@ -1,5 +1,6 @@
 import React from "react";
 
+//Renders the content of the markdown code to the screen.
 const Markdown = ({ markdown }) => {
     return (
         <>

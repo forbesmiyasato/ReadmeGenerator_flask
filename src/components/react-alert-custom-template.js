@@ -1,5 +1,6 @@
 import React from "react";
 
+//Customized template for react-alert. Created this for light theme alert (Only dark theme was available).
 const alertStyle = {
     backgroundColor: "#f8f9fa",
     color: "#343a40",

@@ -5,19 +5,25 @@ import Preview from "./preview";
 import Markdown from "./markdown";
 import RepoList from "./repoList";
 
+//Custom modal for displaying the markdown, preview and repository list.
 const CustomModal = (props) => {
     const [selectedRepo, setSelectedRepo] = useState("");
     const [preview, setPreview] = useState(false);
+
+    //Sets the selectedRepo to the repository name
     const handleRepoSelection = (repoName) => {
         setSelectedRepo(repoName);
     };
 
+    //Hides the modal
     const onHide = () => {
         setSelectedRepo("");
         props.onHide();
         setPreview(false);
     };
 
+    //If type is "github" render repository list. Else if type is "Preview" render markdown preview. 
+    //Else if type is "Markdown" display markdown code as html.
     return props.type === "github" ? (
         <Modal
             show={props.show}

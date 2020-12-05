@@ -1,7 +1,7 @@
 import React from "react";
 
+//Renders the list of user repositories. Highlights the selected one.
 const RepoList = ({ repos, onRepoSelect, selectedRepo }) => {
-
     return (
         repos &&
         repos.length > 0 &&

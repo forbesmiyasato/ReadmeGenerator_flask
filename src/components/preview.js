@@ -1,6 +1,7 @@
 import React from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 
+//Renders the preview of the markdown code (Sample of how it'll look in Github)
 const Preview = ({ markdown }) => {
     return (
         <>
