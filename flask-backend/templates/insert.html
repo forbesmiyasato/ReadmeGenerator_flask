@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Insert Portland Charity or Social Service</h2>
+    <form action="{{ url_for('insert') }}" method=post>
+	<p class="heading">Name: <input type="text" name="name" required>
+	<p class="heading">Description: <input type="text" name="description" required>
+        <p class="heading">Street Address: <input type="text" name="street_address" required>
+        <p class="heading">Type of Service: <input type="text" name="type_of_service" required>
+        <p class="heading">Phone Number: <input type="text" name="phone_number" required>
+        <p class="heading">Donation Total: <input type="number" step="0.01" min="0" name="donation_total" required>
+        <p class="heading">Rating: <input type="number" step="1" name="rating" min="0" max="5" required>
+	<p><input type=submit value=Sign></p>
+    </form>
+{% endblock %}
