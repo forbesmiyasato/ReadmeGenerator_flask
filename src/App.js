@@ -155,11 +155,11 @@ const App = () => {
         let success = true;
         try {
             let response = await axios.get(
-                `https://api.github.com/repos/forbesmiyasato/${repoName}/contents/README.md`
+                `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`
             );
             let sha = response.data.sha;
             console.log(response);
-            axios.put(
+            await axios.put(
                 `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                 {
                     message: "Update README.md from Forbes' README Generator",
@@ -175,7 +175,7 @@ const App = () => {
             );
         } catch (err) {
             try {
-                axios.put(
+                await axios.put(
                     `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                     {
                         message:
@@ -191,7 +191,9 @@ const App = () => {
                 );
             } catch (err) {
                 success = false;
-                alert(err);
+                alert.show("Failed to Upload to Github :(", {
+                    type: types.ERROR,
+                });
             }
         }
         setModalShow(false);
@@ -264,7 +266,7 @@ const App = () => {
                 markdown += `${description.trim()}\n\n<br />\n\n`;
             }
 
-            markdown += '### Welcome to ' + title.trim() + '!\n\n<hr>\n\n';
+            markdown += "### Welcome to " + title.trim() + "!\n\n<hr>\n\n";
         }
         if (intro) {
             markdown += `${intro.trim()}\n\n<br />\n\n\n`;
@@ -278,18 +280,24 @@ const App = () => {
         }
 
         if (usage) {
-            markdown += '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' 
-            + usage.trim() + '\n\n<br />\n\n';
+            markdown +=
+                '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' +
+                usage.trim() +
+                "\n\n<br />\n\n";
         }
 
         if (contribute) {
-            markdown += '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n'
-            + contribute.trim() + '\n\n<br />\n\n';
+            markdown +=
+                '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n' +
+                contribute.trim() +
+                "\n\n<br />\n\n";
         }
 
         if (acknowledgements) {
-            markdown += '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n'
-            + acknowledgements.trim() + '\n\n<br />\n';
+            markdown +=
+                '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n' +
+                acknowledgements.trim() +
+                "\n\n<br />\n";
         }
 
         setMarkdown(markdown);
