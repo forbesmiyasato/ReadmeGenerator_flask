@@ -3,7 +3,7 @@ FROM node:10-alpine as react-build
 WORKDIR /app
 COPY . ./
 RUN npm install --only=production
-RUN npm build
+RUN npm run-script build
 
 # server environment
 FROM nginx:alpine
