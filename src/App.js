@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import firebaseConfig from "./firebaseConfig";
+import config from "./config";
 import axios from "axios";
 import TextForm from "./components/textForm";
 import Form from "react-bootstrap/Form";
@@ -39,7 +39,7 @@ const App = () => {
 
     //initialize firebase
     if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(config);
     }
 
     //set up the provider for firebase authentication
@@ -62,7 +62,9 @@ const App = () => {
                 });
             })
             .catch(function (error) {
-                // An error happened.
+                alert.show(error, {
+                    type: types.ERROR,
+                });
             });
     };
 
@@ -134,13 +136,7 @@ const App = () => {
                 })
                 .catch(function (error) {
                     // Handle Errors here.
-                    var errorCode = error.code;
                     var errorMessage = error.message;
-                    // The email of the user's account used.
-                    var email = error.email;
-                    // The firebase.auth.AuthCredential type that was used.
-                    var credential = error.credential;
-                    // ...
                     alert.show(errorMessage, {
                         type: types.ERROR,
                     });
