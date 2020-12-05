@@ -19,10 +19,6 @@ import {
 } from "react-bootstrap-icons";
 
 const App = () => {
-    // const [gitHubUsername, setGitHubUsername] = useState("");
-    // const [accessToken, setAccessToken] = useState("");
-    // const [userRepoUrl, setUserRepoUrl] = useState("");
-    // const [repos, setRepos] = useState([]);
     const [gitHubInfo, setGitHubInfo] = useState({
         username: "",
         accessToken: "",
@@ -261,30 +257,40 @@ const App = () => {
     }, [gitHubInfo]);
 
     useEffect(() => {
-        let markdown = `
-# ${title.trim()}\n
-${description.trim()}\n
-<br />\n
-### Welcome to ${title.trim()}!\n
-<hr>\n
-${intro.trim()}\n
-<br />\n\n
-### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n
-<hr>\n
-${installation.trim()}\n
-<br />\n
-### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n
-<hr>\n
-${usage.trim()}\n
-<br />\n
-### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n
-<hr>\n
-${contribute.trim()}\n
-<br />\n
-### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n
-<hr>\n
-${acknowledgements.trim()}\n
-<br />`;
+        let markdown = "";
+        if (title) {
+            markdown += `# ${title.trim()}\n\n`;
+            if (description) {
+                markdown += `${description.trim()}\n\n<br />\n\n`;
+            }
+
+            markdown += '### Welcome to ' + title.trim() + '!\n\n<hr>\n\n';
+        }
+        if (intro) {
+            markdown += `${intro.trim()}\n\n<br />\n\n\n`;
+        }
+
+        if (installation) {
+            markdown +=
+                '### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n\n<hr>\n\n' +
+                installation.trim() +
+                "\n\n<br />\n\n";
+        }
+
+        if (usage) {
+            markdown += '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' 
+            + usage.trim() + '\n\n<br />\n\n';
+        }
+
+        if (contribute) {
+            markdown += '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n'
+            + contribute.trim() + '\n\n<br />\n\n';
+        }
+
+        if (acknowledgements) {
+            markdown += '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n'
+            + acknowledgements.trim() + '\n\n<br />\n';
+        }
 
         setMarkdown(markdown);
     }, [
