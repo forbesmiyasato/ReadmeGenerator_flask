@@ -2,8 +2,8 @@
 FROM node:10-alpine as react-build
 WORKDIR /app
 COPY . ./
-RUN yarn
-RUN yarn build
+RUN npm install --only=production
+RUN npm build
 
 # server environment
 FROM nginx:alpine
