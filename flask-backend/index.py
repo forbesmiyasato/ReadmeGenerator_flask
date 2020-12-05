@@ -6,4 +6,4 @@ class Index(MethodView):
         """
         Accepts get requests, and renders the landing page of the README generator
         """
-        return render_template('index.html')
+        return render_template('index.html', title="GitHub README Generator")

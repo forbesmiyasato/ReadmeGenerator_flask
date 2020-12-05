@@ -4,8 +4,6 @@ A GitHub README flask backend.
 import flask
 from flask.views import MethodView
 from index import Index
-from insert import Insert
-from listings import Listings
 
 app = flask.Flask(__name__)       # our Flask app
 
