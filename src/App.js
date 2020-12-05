@@ -153,12 +153,13 @@ const App = () => {
 
     const uploadReadMeToGithub = async (repoName) => {
         let success = true;
+        setModalShow(false);
         try {
             let response = await axios.get(
                 `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`
             );
             let sha = response.data.sha;
-            console.log(response);
+
             await axios.put(
                 `https://api.github.com/repos/${gitHubInfo.username}/${repoName}/contents/README.md`,
                 {
@@ -196,7 +197,6 @@ const App = () => {
                 });
             }
         }
-        setModalShow(false);
         if (success) {
             alert.show(
                 <div>
@@ -230,7 +230,6 @@ const App = () => {
 
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
     useEffect(() => {
-        console.log(gitHubInfo);
         // Fetch users repositories to display
         const fetchUserRepo = async () => {
             let response = await axios.get(gitHubInfo.userRepoUrl);
@@ -247,7 +246,6 @@ const App = () => {
                 }
             });
 
-            console.log(repos);
             setRepos(repos);
             setModalShow(true);
             setModalType("github");

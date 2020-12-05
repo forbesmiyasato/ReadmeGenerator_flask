@@ -10,7 +10,6 @@ const CustomModal = (props) => {
     const [preview, setPreview] = useState(false);
     const handleRepoSelection = (repoName) => {
         setSelectedRepo(repoName);
-        console.log(repoName);
     };
 
     const onHide = () => {

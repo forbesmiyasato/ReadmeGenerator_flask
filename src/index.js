@@ -5,13 +5,11 @@ import AlertTemplate from './components/react-alert-custom-template'
 import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// optional configuration for alerts
+// configurations for alerts
 const options = {
-    // you can also just use 'bottom center'
     position: positions.TOP_CENTER,
-    timeout: 10000,
+    timeout: 5000,
     offset: "30px",
-    // you can also just use 'scale'
     transition: transitions.SCALE,
 };
 

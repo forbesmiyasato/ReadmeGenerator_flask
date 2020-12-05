@@ -1,7 +1,7 @@
 import React from "react";
 
 const RepoList = ({ repos, onRepoSelect, selectedRepo }) => {
-    console.log(selectedRepo)
+
     return (
         repos &&
         repos.length > 0 &&
