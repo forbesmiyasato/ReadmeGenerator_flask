@@ -1,22 +1,14 @@
-import React from 'react'
-import Modal from 'react-bootstrap/Modal'
+import React from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 
-const Preview = ({markdown}) => {
+const Preview = ({ markdown }) => {
     return (
         <>
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Preview
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
             <div className="border border-light shadow-sm rounded p-2">
-        <MarkdownPreview source={markdown} />
-        </div>
-        </Modal.Body>
+                <MarkdownPreview source={markdown} />
+            </div>
         </>
-    )
-}
+    );
+};
 
 export default Preview;

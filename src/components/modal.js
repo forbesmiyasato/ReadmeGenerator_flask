@@ -16,7 +16,8 @@ const CustomModal = (props) => {
     const onHide = () => {
         setSelectedRepo("");
         props.onHide();
-    }
+    };
+
     return props.type === "github" ? (
         <Modal
             show={props.show}
@@ -56,10 +57,20 @@ const CustomModal = (props) => {
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
-            {props.type === "preview" && <Preview markdown={props.markdown} />}
-            {props.type === "markdown" && (
-                <Markdown markdown={props.markdown} />
-            )}
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    {props.type}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {!props.markdown ? (
+                    "You didn't input anything"
+                ) : props.type === "Preview" ? (
+                    <Preview markdown={props.markdown} />
+                ) : props.type === "Markdown" ? (
+                    <Markdown markdown={props.markdown} />
+                ) : null}
+            </Modal.Body>
             <Modal.Footer>
                 <Button onClick={props.onHide}>Close</Button>
             </Modal.Footer>

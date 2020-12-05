@@ -104,12 +104,12 @@ const App = () => {
 
     const handlePreviewClick = () => {
         setModalShow(true);
-        setModalType("preview");
+        setModalType("Preview");
     };
 
     const handleMarkdownClick = () => {
         setModalShow(true);
-        setModalType("markdown");
+        setModalType("Markdown");
     };
 
     const HandleUploadToGitHubClicked = () => {
@@ -314,8 +314,8 @@ const App = () => {
     return (
         <div className="App">
             <Container>
-                <h1 className="App-header mt-3">
-                    GitHub README Generator by Forbes Miyasato
+                <h1 className="App-header mt-3 text-center">
+                    GitHub README Generator
                 </h1>
 
                 <Form onKeyDown={handleKeyDown}>
@@ -408,6 +408,7 @@ const App = () => {
                         <BootstrapReboot /> Reset All Inputs
                     </Button>
                 </div>
+                <footer className="text-center mb-5">Made by Forbes Miyasato</footer>
             </Container>
             <Modal
                 show={modalShow}
