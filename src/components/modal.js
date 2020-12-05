@@ -7,7 +7,7 @@ import RepoList from "./repoList";
 
 const CustomModal = (props) => {
     const [selectedRepo, setSelectedRepo] = useState("");
-
+    const [preview, setPreview] = useState(false);
     const handleRepoSelection = (repoName) => {
         setSelectedRepo(repoName);
         console.log(repoName);
@@ -16,6 +16,7 @@ const CustomModal = (props) => {
     const onHide = () => {
         setSelectedRepo("");
         props.onHide();
+        setPreview(false);
     };
 
     return props.type === "github" ? (
@@ -31,22 +32,45 @@ const CustomModal = (props) => {
                 <Modal.Title>Pick the repository</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <RepoList
-                    repos={props.repos}
-                    onRepoSelect={handleRepoSelection}
-                    selectedRepo={selectedRepo}
-                />
+                {preview &&
+                    (!props.markdown ? (
+                        "You didn't input anything, are you sure you want to upload the README?"
+                    ) : (
+                        <Preview markdown={props.markdown} />
+                    ))}
+                {!preview && (
+                    <RepoList
+                        repos={props.repos}
+                        onRepoSelect={handleRepoSelection}
+                        selectedRepo={selectedRepo}
+                    />
+                )}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
-                <Button
-                    variant="primary"
-                    onClick={() => props.onRepoSelect(selectedRepo)}
-                >
-                    Confirm Repository
-                </Button>
+                {!preview && (
+                    <>
+                        <Button
+                            variant="primary"
+                            onClick={() => setPreview(true)}
+                        >
+                            Preview Markdown
+                        </Button>
+                        <Button
+                            variant="success"
+                            onClick={() => props.onRepoSelect(selectedRepo)}
+                        >
+                            Confirm Repository
+                        </Button>
+                    </>
+                )}
+                {preview && (
+                    <Button variant="primary" onClick={() => setPreview(false)}>
+                        Back to list
+                    </Button>
+                )}
             </Modal.Footer>
         </Modal>
     ) : (
