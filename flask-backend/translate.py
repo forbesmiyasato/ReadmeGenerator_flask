@@ -12,10 +12,11 @@ class Translate(MethodView):
         and after translation returns translated content back to frontend
         """
         translate_client = translate.Client()
-
-        text = request.form.get('content')
-        targetLanguage = request.form.get('targetLanguage')
-
+        payload = request.get_json()
+        text = payload['content']
+        targetLanguage = payload['targetLanguage']
+        print(text)
+        print(targetLanguage)
         if isinstance(text, six.binary_type):
     	    text = text.decode("utf-8")
 

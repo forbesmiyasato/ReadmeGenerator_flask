@@ -246,7 +246,7 @@ const App = () => {
 
     //Makes post request to Flask backend to translate all the content into targetted language
     const translateContent = async (targetLanguage) => {
-        let translatedContent = await axios.post(
+        let response = await axios.post(
             "http://127.0.0.1:5000/translate",
             {
                 content: content,
@@ -254,6 +254,7 @@ const App = () => {
             }
         );
 
+        let translatedContent = response.data;
         //Parse translated content into each individual input field. Using "#1+3=4-" as the delimeter
         parseContentToInputs(translatedContent);
     };
@@ -270,7 +271,7 @@ const App = () => {
         let tempUsage = "";
         let tempContribute = "";
         let tempAcknowledgements = "";
-
+        console.log(content);
         for (let i = 0; i < 7; i++) {
             if (splitIndex > splittedContent.length) {
                 break;
@@ -326,6 +327,7 @@ const App = () => {
             }
         }
 
+        console.log(tempTitle);
         setTitle(tempTitle);
         setDescription(tempDescription);
         setIntro(tempIntro);
@@ -412,6 +414,7 @@ const App = () => {
                 acknowledgements.trim() +
                 "\n\n<br />\n";
         }
+        console.log(content);
 
         setContent(content);
         setMarkdown(markdown);
