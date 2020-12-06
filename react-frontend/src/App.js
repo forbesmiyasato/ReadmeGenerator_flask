@@ -247,7 +247,7 @@ const App = () => {
     //Makes post request to Flask backend to translate all the content into targetted language
     const translateContent = async (targetLanguage) => {
         let response = await axios.post(
-            "http://127.0.0.1:5000/translate",
+            "https://cs530-final-yxqexgpoza-uw.a.run.app/translate",
             {
                 content: content,
                 targetLanguage: targetLanguage,
