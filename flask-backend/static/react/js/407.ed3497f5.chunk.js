@@ -1,0 +1,2 @@
+(this["webpackJsonpreact-firebase-authentication"]=this["webpackJsonpreact-firebase-authentication"]||[]).push([[407],{491:function(a,e){var s=Prism.util.clone(Prism.languages.typescript);Prism.languages.tsx=Prism.languages.extend("jsx",s)}}]);
+//# sourceMappingURL=407.ed3497f5.chunk.js.map

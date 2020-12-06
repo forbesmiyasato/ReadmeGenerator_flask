@@ -1,0 +1,2 @@
+(this["webpackJsonpreact-firebase-authentication"]=this["webpackJsonpreact-firebase-authentication"]||[]).push([[313],{397:function(n,t){Prism.languages.prolog={comment:[/%.+/,/\/\*[\s\S]*?\*\//],string:{pattern:/(["'])(?:\1\1|\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,greedy:!0},builtin:/\b(?:fx|fy|xf[xy]?|yfx?)\b/,variable:/\b[A-Z_]\w*/,function:/\b[a-z]\w*(?:(?=\()|\/\d+)/,number:/\b\d+\.?\d*/,operator:/[:\\=><\-?*@\/;+^|!$.]+|\b(?:is|mod|not|xor)\b/,punctuation:/[(){}\[\],]/}}}]);
+//# sourceMappingURL=313.9833aebb.chunk.js.map

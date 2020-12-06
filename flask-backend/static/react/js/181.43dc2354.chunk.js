@@ -1,0 +1,2 @@
+(this["webpackJsonpreact-firebase-authentication"]=this["webpackJsonpreact-firebase-authentication"]||[]).push([[181],{265:function(t,a){Prism.languages.ini={comment:/^[ \t]*[;#].*$/m,selector:/^[ \t]*\[.*?\]/m,constant:/^[ \t]*[^\s=]+?(?=[ \t]*=)/m,"attr-value":{pattern:/=.*/,inside:{punctuation:/^[=]/}}}}}]);
+//# sourceMappingURL=181.43dc2354.chunk.js.map

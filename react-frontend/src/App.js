@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Modal from "./components/modal";
+import Dropdown from "./components/dropdown";
 import { useAlert, types } from "react-alert";
 import {
     CodeSlash,
@@ -26,6 +27,7 @@ const App = () => {
     });
     const [repos, setRepos] = useState([]);
     const [markdown, setMarkdown] = useState("");
+    const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [intro, setIntro] = useState("");
@@ -76,7 +78,7 @@ const App = () => {
         }
     };
 
-    //The following 7 methods are to handle user data input. 
+    //The following 7 methods are to handle user data input.
     //Function names are descriptive to their use case.
     //Sets content for each section to the current input value.
     const handleTitleChange = (element) => {
@@ -154,14 +156,14 @@ const App = () => {
         }
     };
 
-    //Uploads the readme content to the Github repository. 
+    //Uploads the readme content to the Github repository.
     const uploadReadMeToGithub = async (repoName) => {
         let success = true;
         setModalShow(false);
         try {
             //In order to update the README content, a sha parameter is required in the request body.
             //The sha value is unique to each commit. In order to get the proper sha value, we need to make
-            //a get request to fetch the latest sha. 
+            //a get request to fetch the latest sha.
             //This request will fail and redirect to the catch block below if the README.md file doesn't exist.
             //In this case we want to create the README file instead of updating it. Hence, the sha value isn't needed.
             let response = await axios.get(
@@ -242,6 +244,97 @@ const App = () => {
         setAcknowledgements("");
     };
 
+    //Makes post request to Flask backend to translate all the content into targetted language
+    const translateContent = async (targetLanguage) => {
+        let translatedContent = await axios.post(
+            "http://127.0.0.1:5000/translate",
+            {
+                content: content,
+                targetLanguage: targetLanguage,
+            }
+        );
+
+        //Parse translated content into each individual input field. Using "#1+3=4-" as the delimeter
+        parseContentToInputs(translatedContent);
+    };
+
+    //Sets the state for each individual input based on the stored content
+    const parseContentToInputs = (content) => {
+        let splittedContent = content.split("#1+3=4-");
+        let splitIndex = 0;
+        //Need these temp values to avoid updating state in loop
+        let tempTitle = "";
+        let tempDescription = "";
+        let tempIntro = "";
+        let tempInstallation = "";
+        let tempUsage = "";
+        let tempContribute = "";
+        let tempAcknowledgements = "";
+
+        for (let i = 0; i < 7; i++) {
+            if (splitIndex > splittedContent.length) {
+                break;
+            }
+            switch (i) {
+                case 0:
+                    if (title) {
+                        tempTitle = splittedContent[splitIndex];
+                        splitIndex++;
+                    }
+                    break;
+                case 1:
+                    if (description) {
+                        tempDescription = splittedContent[splitIndex];
+                        splitIndex++;
+                    }
+                    break;
+                case 2:
+                    if (intro) {
+                        tempIntro = splittedContent[splitIndex];
+                        splitIndex++;
+                    }
+                    break;
+                case 3:
+                    if (installation) {
+                        tempInstallation = splittedContent[splitIndex];
+                        splitIndex++;
+                    }
+                    break;
+                case 4:
+                    if (usage) {
+                        tempUsage = splittedContent[splitIndex];
+                        setUsage(splittedContent[splitIndex]);
+                        splitIndex++;
+                    }
+                    break;
+                case 5:
+                    if (contribute) {
+                        tempContribute = splittedContent[splitIndex];
+                        setContribute(splittedContent[splitIndex]);
+                        splitIndex++;
+                    }
+                    break;
+                case 6:
+                    if (acknowledgements) {
+                        tempAcknowledgements = splittedContent[splitIndex];
+                        setAcknowledgements(splittedContent[splitIndex]);
+                        splitIndex++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        setTitle(tempTitle);
+        setDescription(tempDescription);
+        setIntro(tempIntro);
+        setInstallation(tempInstallation);
+        setUsage(tempUsage);
+        setContribute(tempContribute);
+        setAcknowledgements(tempAcknowledgements);
+    };
+
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
     useEffect(() => {
         // Fetch users repositories to display
@@ -273,19 +366,23 @@ const App = () => {
     //Update the markdown content everytime an input field is modified.
     useEffect(() => {
         let markdown = "";
+        let content = "";
         if (title) {
+            content += `${title}`;
             markdown += `# ${title.trim()}\n\n`;
             if (description) {
+                content += `#1+3=4-${description}`;
                 markdown += `${description.trim()}\n\n<br />\n\n`;
             }
-
             markdown += "### Welcome to " + title.trim() + "!\n\n<hr>\n\n";
         }
         if (intro) {
+            content += `#1+3=4-${intro}`;
             markdown += `${intro.trim()}\n\n<br />\n\n\n`;
         }
 
         if (installation) {
+            content += `#1+3=4-${installation}`;
             markdown +=
                 '### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n\n<hr>\n\n' +
                 installation.trim() +
@@ -293,6 +390,7 @@ const App = () => {
         }
 
         if (usage) {
+            content += `#1+3=4-${usage}`;
             markdown +=
                 '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' +
                 usage.trim() +
@@ -300,6 +398,7 @@ const App = () => {
         }
 
         if (contribute) {
+            content += `#1+3=4-${contribute}`;
             markdown +=
                 '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n' +
                 contribute.trim() +
@@ -307,12 +406,14 @@ const App = () => {
         }
 
         if (acknowledgements) {
+            content += `#1+3=4-${acknowledgements}`;
             markdown +=
                 '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n' +
                 acknowledgements.trim() +
                 "\n\n<br />\n";
         }
 
+        setContent(content);
         setMarkdown(markdown);
     }, [
         title,
@@ -392,32 +493,36 @@ const App = () => {
                 </Form>
                 <div className="mb-5">
                     <Button
-                        variant="outline-primary mr-2"
+                        variant="outline-primary mr-2 mb-2"
                         onClick={handleMarkdownClick}
                     >
                         <CodeSlash /> Get Markdown
                     </Button>
                     <Button
-                        variant="outline-success mr-2"
+                        variant="outline-success mr-2 mb-2"
                         onClick={HandleUploadToGitHubClicked}
                     >
                         <CloudUpload /> Upload To Github
                     </Button>
                     <Button
-                        variant="outline-info mr-2"
+                        variant="outline-info mr-2 mb-2"
                         onClick={handlePreviewClick}
                     >
                         <Eye /> Preview
                     </Button>
                     {gitHubInfo.username && (
                         <Button
-                            variant="outline-warning mr-2"
+                            variant="outline-warning mr-2 mt-2 mb-2"
                             onClick={signOut}
                         >
                             <ArrowBarLeft /> Sign out of Github
                         </Button>
                     )}
-                    <Button variant="outline-danger" onClick={resetInputs}>
+                    <Dropdown onSelect={translateContent} />
+                    <Button
+                        variant="outline-danger mr-2 mb-2"
+                        onClick={resetInputs}
+                    >
                         <BootstrapReboot /> Reset All Inputs
                     </Button>
                 </div>
