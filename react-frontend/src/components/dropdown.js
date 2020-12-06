@@ -8,7 +8,7 @@ let languages = [
     { name: "Chinese", code: "zh-CN" },
     { name: "Hindi", code: "hi" },
     { name: "French", code: "fr" },
-    { name: "Japanese", code: "jp" },
+    { name: "Japanese", code: "ja" },
     { name: "Greek", code: "el" },
     { name: "Thai", code: "th" },
     { name: "Korean", code: "ko" },

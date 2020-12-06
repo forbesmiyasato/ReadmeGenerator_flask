@@ -255,13 +255,13 @@ const App = () => {
         );
 
         let translatedContent = response.data;
-        //Parse translated content into each individual input field. Using "#1+3=4-" as the delimeter
+        //Parse translated content into each individual input field. Using "@@" as the delimeter
         parseContentToInputs(translatedContent);
     };
 
     //Sets the state for each individual input based on the stored content
     const parseContentToInputs = (content) => {
-        let splittedContent = content.split("#1+3=4-");
+        let splittedContent = content.split("@@");
         let splitIndex = 0;
         //Need these temp values to avoid updating state in loop
         let tempTitle = "";
@@ -272,6 +272,8 @@ const App = () => {
         let tempContribute = "";
         let tempAcknowledgements = "";
         console.log(content);
+        console.log(splittedContent)
+        console.log(splittedContent.length);
         for (let i = 0; i < 7; i++) {
             if (splitIndex > splittedContent.length) {
                 break;
@@ -373,18 +375,18 @@ const App = () => {
             content += `${title}`;
             markdown += `# ${title.trim()}\n\n`;
             if (description) {
-                content += `#1+3=4-${description}`;
+                content += `@@${description}`;
                 markdown += `${description.trim()}\n\n<br />\n\n`;
             }
             markdown += "### Welcome to " + title.trim() + "!\n\n<hr>\n\n";
         }
         if (intro) {
-            content += `#1+3=4-${intro}`;
+            content += `@@${intro}`;
             markdown += `${intro.trim()}\n\n<br />\n\n\n`;
         }
 
         if (installation) {
-            content += `#1+3=4-${installation}`;
+            content += `@@${installation}`;
             markdown +=
                 '### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n\n<hr>\n\n' +
                 installation.trim() +
@@ -392,7 +394,7 @@ const App = () => {
         }
 
         if (usage) {
-            content += `#1+3=4-${usage}`;
+            content += `@@${usage}`;
             markdown +=
                 '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' +
                 usage.trim() +
@@ -400,7 +402,7 @@ const App = () => {
         }
 
         if (contribute) {
-            content += `#1+3=4-${contribute}`;
+            content += `@@${contribute}`;
             markdown +=
                 '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n' +
                 contribute.trim() +
@@ -408,13 +410,12 @@ const App = () => {
         }
 
         if (acknowledgements) {
-            content += `#1+3=4-${acknowledgements}`;
+            content += `@@${acknowledgements}`;
             markdown +=
                 '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n' +
                 acknowledgements.trim() +
                 "\n\n<br />\n";
         }
-        console.log(content);
 
         setContent(content);
         setMarkdown(markdown);
