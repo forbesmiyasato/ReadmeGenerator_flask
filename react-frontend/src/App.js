@@ -142,6 +142,10 @@ const App = () => {
                         username: username,
                         userRepoUrl: url,
                     });
+                    console.log(result.user);
+                    alert.show(`Hi ${result.user.displayName}! Please pick the repository you want to upload to.`, {
+                        type: types.SUCCESS,
+                    });
                 })
                 .catch(function (error) {
                     // Handle Errors here.
@@ -246,17 +250,33 @@ const App = () => {
 
     //Makes post request to Flask backend to translate all the content into targetted language
     const translateContent = async (targetLanguage) => {
+        try {
         let response = await axios.post(
             "https://cs530-final-yxqexgpoza-uw.a.run.app/translate",
             {
                 content: content,
                 targetLanguage: targetLanguage,
+            }, {
+                headers: {
+                    'X-CSRFToken': document.getElementById("csrf-token").getAttribute("content")
+                }
             }
         );
 
         let translatedContent = response.data;
         //Parse translated content into each individual input field. Using "@@" as the delimeter
         parseContentToInputs(translatedContent);
+
+        alert.show("Translated content successfully!", {
+            type: types.SUCCESS,
+        });
+
+        } catch (err) {
+            //May fail due to empty input or expired csrf token.
+            alert.show("Failed To Translate. Your input might be empty, or try refresh the page.", {
+                type: types.ERROR,
+            });
+        }
     };
 
     //Sets the state for each individual input based on the stored content
@@ -271,9 +291,7 @@ const App = () => {
         let tempUsage = "";
         let tempContribute = "";
         let tempAcknowledgements = "";
-        console.log(content);
-        console.log(splittedContent)
-        console.log(splittedContent.length);
+
         for (let i = 0; i < 7; i++) {
             if (splitIndex > splittedContent.length) {
                 break;
@@ -286,7 +304,7 @@ const App = () => {
                     }
                     break;
                 case 1:
-                    if (description) {
+                    if (title && description) {
                         tempDescription = splittedContent[splitIndex];
                         splitIndex++;
                     }
@@ -306,21 +324,18 @@ const App = () => {
                 case 4:
                     if (usage) {
                         tempUsage = splittedContent[splitIndex];
-                        setUsage(splittedContent[splitIndex]);
                         splitIndex++;
                     }
                     break;
                 case 5:
                     if (contribute) {
                         tempContribute = splittedContent[splitIndex];
-                        setContribute(splittedContent[splitIndex]);
                         splitIndex++;
                     }
                     break;
                 case 6:
                     if (acknowledgements) {
                         tempAcknowledgements = splittedContent[splitIndex];
-                        setAcknowledgements(splittedContent[splitIndex]);
                         splitIndex++;
                     }
                     break;
@@ -329,7 +344,6 @@ const App = () => {
             }
         }
 
-        console.log(tempTitle);
         setTitle(tempTitle);
         setDescription(tempDescription);
         setIntro(tempIntro);
@@ -372,21 +386,21 @@ const App = () => {
         let markdown = "";
         let content = "";
         if (title) {
-            content += `${title}`;
+            content += `${title}@@`;
             markdown += `# ${title.trim()}\n\n`;
             if (description) {
-                content += `@@${description}`;
+                content += `${description}@@`;
                 markdown += `${description.trim()}\n\n<br />\n\n`;
             }
             markdown += "### Welcome to " + title.trim() + "!\n\n<hr>\n\n";
         }
         if (intro) {
-            content += `@@${intro}`;
+            content += `${intro}@@`;
             markdown += `${intro.trim()}\n\n<br />\n\n\n`;
         }
 
         if (installation) {
-            content += `@@${installation}`;
+            content += `${installation}@@`;
             markdown +=
                 '### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n\n<hr>\n\n' +
                 installation.trim() +
@@ -394,7 +408,7 @@ const App = () => {
         }
 
         if (usage) {
-            content += `@@${usage}`;
+            content += `${usage}@@`;
             markdown +=
                 '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' +
                 usage.trim() +
@@ -402,7 +416,7 @@ const App = () => {
         }
 
         if (contribute) {
-            content += `@@${contribute}`;
+            content += `${contribute}@@`;
             markdown +=
                 '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n' +
                 contribute.trim() +
@@ -410,7 +424,7 @@ const App = () => {
         }
 
         if (acknowledgements) {
-            content += `@@${acknowledgements}`;
+            content += `${acknowledgements}@@`;
             markdown +=
                 '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n' +
                 acknowledgements.trim() +
