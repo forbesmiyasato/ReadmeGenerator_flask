@@ -142,8 +142,8 @@ const App = () => {
                         username: username,
                         userRepoUrl: url,
                     });
-                    console.log(result.user);
-                    alert.show(`Hi ${result.user.displayName}! Please pick the repository you want to upload to.`, {
+
+                    alert.show(`Hi ${result.user.displayName}!`, {
                         type: types.SUCCESS,
                     });
                 })
@@ -249,10 +249,18 @@ const App = () => {
     };
 
     //Makes post request to Flask backend to translate all the content into targetted language
-    const translateContent = async (targetLanguage) => {
+    const translateContent = async (targetLanguage, languageName) => {
+        if (!content) {
+            alert.show(`There's no content to translate`, {
+                type: types.ERROR,
+            });
+
+            return;
+        }
+
         try {
         let response = await axios.post(
-            "https://cs530-final-yxqexgpoza-uw.a.run.app/translate",
+            "https://readme-generator-yxqexgpoza-uw.a.run.app/translate",
             {
                 content: content,
                 targetLanguage: targetLanguage,
@@ -267,7 +275,7 @@ const App = () => {
         //Parse translated content into each individual input field. Using "@@" as the delimeter
         parseContentToInputs(translatedContent);
 
-        alert.show("Translated content successfully!", {
+        alert.show(`Translated content to ${languageName}!`, {
             type: types.SUCCESS,
         });
 
@@ -304,7 +312,7 @@ const App = () => {
                     }
                     break;
                 case 1:
-                    if (title && description) {
+                    if (description) {
                         tempDescription = splittedContent[splitIndex];
                         splitIndex++;
                     }
@@ -344,13 +352,13 @@ const App = () => {
             }
         }
 
-        setTitle(tempTitle);
-        setDescription(tempDescription);
-        setIntro(tempIntro);
-        setInstallation(tempInstallation);
-        setUsage(tempUsage);
-        setContribute(tempContribute);
-        setAcknowledgements(tempAcknowledgements);
+        setTitle(tempTitle.trim());
+        setDescription(tempDescription.trim());
+        setIntro(tempIntro.trim());
+        setInstallation(tempInstallation.trim());
+        setUsage(tempUsage.trim());
+        setContribute(tempContribute.trim());
+        setAcknowledgements(tempAcknowledgements.trim());
     };
 
     //Fetch user repo, whenever user repo url changes (happens once user is authenticated)
@@ -386,21 +394,25 @@ const App = () => {
         let markdown = "";
         let content = "";
         if (title) {
-            content += `${title}@@`;
+            content += `${title.trim()} @@ `;
             markdown += `# ${title.trim()}\n\n`;
             if (description) {
-                content += `${description}@@`;
                 markdown += `${description.trim()}\n\n<br />\n\n`;
             }
             markdown += "### Welcome to " + title.trim() + "!\n\n<hr>\n\n";
         }
+
+        if (description) {
+            content += `${description.trim()} @@ `;
+        }
+
         if (intro) {
-            content += `${intro}@@`;
+            content += `${intro.trim()} @@ `;
             markdown += `${intro.trim()}\n\n<br />\n\n\n`;
         }
 
         if (installation) {
-            content += `${installation}@@`;
+            content += `${installation.trim()} @@ `;
             markdown +=
                 '### Get Started <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>\n\n<hr>\n\n' +
                 installation.trim() +
@@ -408,7 +420,7 @@ const App = () => {
         }
 
         if (usage) {
-            content += `${usage}@@`;
+            content += `${usage.trim()} @@ `;
             markdown +=
                 '### Usage <g-emoji class="g-emoji" alias="gear" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2699.png">⚙</g-emoji>\n\n<hr>\n\n' +
                 usage.trim() +
@@ -416,7 +428,7 @@ const App = () => {
         }
 
         if (contribute) {
-            content += `${contribute}@@`;
+            content += `${contribute.trim()} @@ `;
             markdown +=
                 '### Contribute <g-emoji class="g-emoji" alias="toolbox" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f9f0.png">🧰</g-emoji>\n\n<hr>\n\n' +
                 contribute.trim() +
@@ -424,7 +436,7 @@ const App = () => {
         }
 
         if (acknowledgements) {
-            content += `${acknowledgements}@@`;
+            content += `${acknowledgements.trim()} @@ `;
             markdown +=
                 '### Acknowledgements <g-emoji class="g-emoji" alias="blue_heart" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f499.png">💙</g-emoji>\n\n<hr>\n\n' +
                 acknowledgements.trim() +
@@ -465,6 +477,7 @@ const App = () => {
                         label="Description"
                         as="textarea"
                         placeholder="Brief Description..."
+                        text="This field will only be generated if the title is present"
                         value={description}
                         onChange={handleDescriptionChange}
                     ></TextForm>
@@ -530,7 +543,7 @@ const App = () => {
                     </Button>
                     {gitHubInfo.username && (
                         <Button
-                            variant="outline-warning mr-2 mt-2 mb-2"
+                            variant="outline-warning mr-2 mb-2"
                             onClick={signOut}
                         >
                             <ArrowBarLeft /> Sign out of Github

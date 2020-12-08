@@ -11,6 +11,9 @@ const options = {
     timeout: 5000,
     offset: "30px",
     transition: transitions.SCALE,
+    containerStyle: {
+        zIndex: 2050
+    }
 };
 
 const Root = () => (
