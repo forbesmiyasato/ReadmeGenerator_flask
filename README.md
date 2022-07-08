@@ -17,7 +17,9 @@ I developed this project as the final project for CS530: Internet, Web, and Clou
 
 <hr>
 
-I'll add the link to the website after I switch to a free hosting.
+https://forbesmiyasato.github.io/READMEGenerator/ (Free version, it does not use Google APIs so it doesn't support language translation)
+
+Repo for the free version: https://github.com/forbesmiyasato/READMEGenerator
 
 <br />
 
